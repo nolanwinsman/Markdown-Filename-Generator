@@ -26,7 +26,7 @@ def generate_markdown_file_list(directory, output_file='file_list.md', verbose=F
     print(f"Ignoring file extensions: {ignore_ext}")
     print(f"Ignoring directories: {ignore_dirs}")
 
-    # Initialize list to hold all files
+    # Initialize list to hold all files and directories
     all_files = []
 
     # Recursively traverse the directory tree
@@ -40,23 +40,23 @@ def generate_markdown_file_list(directory, output_file='file_list.md', verbose=F
                 continue  # Skip ignored file extensions
             
             filepath = os.path.join(root, filename)
-            relative_path = os.path.relpath(filepath, directory)
-            relative_path = relative_path.replace('\\', '/')  # Convert backslashes to forward slashes
+            relative_path = os.path.relpath(filepath, directory).replace('\\', '/')  # Replace backslashes with forward slashes
             all_files.append((relative_path, ''))
+
+        for dir_name in sorted(dirs):  # Include directories as filenames
+            dir_path = os.path.join(root, dir_name)
+            relative_path = os.path.relpath(dir_path, directory).replace('\\', '/')  # Replace backslashes with forward slashes
+            all_files.append((relative_path + '/', ''))  # Append '/' to indicate it's a directory
 
     # Determine the maximum filename length
     max_filename_length = max(len(filename) for filename, _ in all_files)
 
-    # Calculate the spacing based on the maximum filename length
-    filename_description_spacing = max_filename_length + 5  # Adjust spacing as needed
-
     # Generate Markdown file list
     with open(output_file, 'w') as f:
-        f.write(f"{'Filename':<{filename_description_spacing}}Description\n")
-        f.write("-" * (filename_description_spacing + 15) + "\n")
-        for filename, description in all_files:
-            f.write(f"{filename:<{filename_description_spacing}}| {description}\n")
-        f.write("-" * (filename_description_spacing + 15) + "\n")
+        f.write(f"| {'Filename':<{max_filename_length}} | {'Description':<{max_filename_length}} |\n")
+        f.write(f"| {'-' * max_filename_length} | {'-' * max_filename_length} |\n")
+        for filename, _ in all_files:
+            f.write(f"| {filename:<{max_filename_length}} | {'':<{max_filename_length}} |\n")
 
 def main():
     # Parse command-line arguments
