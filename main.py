@@ -41,12 +41,8 @@ def generate_markdown_file_list(directory, output_file='file_list.md', verbose=F
             
             filepath = os.path.join(root, filename)
             relative_path = os.path.relpath(filepath, directory)
+            relative_path = relative_path.replace('\\', '/')  # Convert backslashes to forward slashes
             all_files.append((relative_path, ''))
-
-        for dir_name in sorted(dirs):  # Sort directories alphabetically
-            dir_path = os.path.join(root, dir_name)
-            relative_path = os.path.relpath(dir_path, directory)
-            all_files.append((f"{relative_path}{os.sep}", ''))  # Append directory path with trailing separator
 
     # Determine the maximum filename length
     max_filename_length = max(len(filename) for filename, _ in all_files)
